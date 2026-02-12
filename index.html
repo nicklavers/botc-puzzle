@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BotC Logic Puzzle</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/clocktower.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <div id="app">
+    <header class="header">
+      <h1>Blood on the Clocktower</h1>
+      <p class="header__subtitle">Logic Puzzle</p>
+    </header>
+
+    <main class="game-layout">
+      <section class="clocktower-section">
+        <div class="phase-indicator" id="phase-indicator"></div>
+        <div class="clocktower" id="clocktower">
+          <!-- 8 seats rendered by JS -->
+        </div>
+        <div class="candidate-count" id="candidate-count"></div>
+      </section>
+
+      <section class="info-section">
+        <div class="info-panel" id="info-panel">
+          <!-- Night sections rendered by JS -->
+        </div>
+        <div class="keyboard-hints">
+          <span>1-8</span> toggle seats &middot;
+          <span>Enter</span> submit &middot;
+          <span>N</span> new game &middot;
+          <span>Esc</span> close
+        </div>
+      </section>
+    </main>
+
+    <footer class="controls">
+      <div class="mode-toggle" id="mode-toggle">
+        <button class="btn mode-toggle__btn mode-toggle__btn--active" data-mode="progressive">Progressive</button>
+        <button class="btn mode-toggle__btn" data-mode="all-at-once">All at Once</button>
+      </div>
+      <div class="lives-display" id="lives-display"></div>
+      <button class="btn btn--submit" id="submit-btn">Submit</button>
+      <button class="btn btn--primary" id="new-game-btn">New Game</button>
+    </footer>
+  </div>
+
+  <div class="result-modal" id="result-modal" hidden>
+    <div class="result-modal__backdrop"></div>
+    <div class="result-modal__content" id="result-content"></div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BotC Puzzle Tests</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Menlo', 'Consolas', monospace; background: #1a1a2e; color: #e0e0e0; padding: 24px; }
+    h1 { color: #c9d1d9; margin-bottom: 16px; font-size: 1.4em; }
+    .summary { padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 1.1em; font-weight: bold; }
+    .summary.pass { background: #0d3320; color: #3fb950; border: 1px solid #238636; }
+    .summary.fail { background: #3d1214; color: #f85149; border: 1px solid #da3633; }
+    .summary.running { background: #1c2333; color: #8b949e; border: 1px solid #30363d; }
+    .group { margin-bottom: 16px; }
+    .group-header { font-size: 1em; color: #58a6ff; padding: 6px 0; border-bottom: 1px solid #30363d; margin-bottom: 4px; }
+    .test { padding: 3px 8px; font-size: 0.85em; }
+    .test.pass { color: #3fb950; }
+    .test.pass::before { content: '\2713 '; }
+    .test.fail { color: #f85149; }
+    .test.fail::before { content: '\2717 '; }
+    .error-detail { color: #f0883e; padding: 2px 8px 2px 24px; font-size: 0.8em; white-space: pre-wrap; }
+    #results { max-width: 900px; }
+  </style>
+</head>
+<body>
+  <h1>BotC Logic Puzzle &mdash; Test Suite</h1>
+  <div id="summary" class="summary running">Running tests&hellip;</div>
+  <div id="results"></div>
+
+  <script type="module">
+    // ── Minimal Test Framework ──────────────────────────────────────
+
+    let totalPass = 0;
+    let totalFail = 0;
+    let currentGroupEl = null;
+
+    const resultsEl = document.getElementById('results');
+    const summaryEl = document.getElementById('summary');
+
+    function addResult(name, passed, errorMsg) {
+      const div = document.createElement('div');
+      div.className = `test ${passed ? 'pass' : 'fail'}`;
+      div.textContent = name;
+      currentGroupEl.appendChild(div);
+
+      if (!passed && errorMsg) {
+        const detail = document.createElement('div');
+        detail.className = 'error-detail';
+        detail.textContent = errorMsg;
+        currentGroupEl.appendChild(detail);
+      }
+
+      if (passed) totalPass++; else totalFail++;
+    }
+
+    window.__test = {
+      assert(condition, msg = 'assertion failed') {
+        if (!condition) throw new Error(msg);
+      },
+
+      assertEqual(actual, expected, msg) {
+        const label = msg || `expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`;
+        if (actual !== expected) throw new Error(label);
+      },
+
+      assertSetEqual(setA, setB, msg) {
+        const a = setA instanceof Set ? setA : new Set(setA);
+        const b = setB instanceof Set ? setB : new Set(setB);
+        const label = msg || `sets not equal: {${[...a].join(',')}} vs {${[...b].join(',')}}`;
+        if (a.size !== b.size) throw new Error(label);
+        for (const v of a) {
+          if (!b.has(v)) throw new Error(label);
+        }
+      },
+
+      assertThrows(fn, msg = 'expected function to throw') {
+        let threw = false;
+        try { fn(); } catch { threw = true; }
+        if (!threw) throw new Error(msg);
+      },
+
+      group(name, fn) {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'group';
+        const header = document.createElement('div');
+        header.className = 'group-header';
+        header.textContent = name;
+        groupDiv.appendChild(header);
+        resultsEl.appendChild(groupDiv);
+        currentGroupEl = groupDiv;
+
+        const tests = fn();
+        // fn returns an object of {testName: testFn}
+        if (tests && typeof tests === 'object') {
+          for (const [testName, testFn] of Object.entries(tests)) {
+            try {
+              testFn();
+              addResult(testName, true);
+            } catch (err) {
+              addResult(testName, false, err.message);
+            }
+          }
+        }
+      },
+    };
+
+    // ── Import and Run Test Modules ─────────────────────────────────
+
+    async function runAll() {
+      try {
+        await import('./test-seating.js');
+        await import('./test-claims.js');
+        await import('./test-solver.js');
+        await import('./test-generator.js');
+        await import('./test-integration.js');
+      } catch (err) {
+        const div = document.createElement('div');
+        div.className = 'test fail';
+        div.textContent = `Module load error: ${err.message}`;
+        resultsEl.appendChild(div);
+        totalFail++;
+      }
+
+      summaryEl.textContent = `${totalPass + totalFail} tests: ${totalPass} passed, ${totalFail} failed`;
+      summaryEl.className = `summary ${totalFail === 0 ? 'pass' : 'fail'}`;
+    }
+
+    runAll();
+  </script>
+</body>
+</html>

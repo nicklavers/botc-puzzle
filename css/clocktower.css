@@ -1,0 +1,147 @@
+/* === Clocktower Circle === */
+
+.clocktower {
+  position: relative;
+  width: calc(var(--circle-radius) * 2 + var(--seat-size) + 40px);
+  height: calc(var(--circle-radius) * 2 + var(--seat-size) + 40px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Seat Base --- */
+
+.seat {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--seat-size);
+  height: var(--seat-size);
+  margin-top: calc(var(--seat-size) / -2);
+  margin-left: calc(var(--seat-size) / -2);
+  transform:
+    rotate(var(--angle))
+    translateY(calc(-1 * var(--circle-radius)))
+    rotate(calc(-1 * var(--angle)));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--bg-card);
+  border: 2px solid var(--border);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    opacity var(--transition-base),
+    transform var(--transition-base);
+  user-select: none;
+}
+
+.seat__icon {
+  width: 110%;
+  height: 110%;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 0 1px var(--bg-primary)) drop-shadow(0 0 2px var(--bg-primary));
+}
+
+.seat__name {
+  position: absolute;
+  bottom: -22px;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  text-align: center;
+  transition: color var(--transition-base);
+}
+
+/* --- Seat States --- */
+
+.seat--alive:hover {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 12px rgba(74, 127, 255, 0.3);
+  transform:
+    rotate(var(--angle))
+    translateY(calc(-1 * var(--circle-radius)))
+    rotate(calc(-1 * var(--angle)))
+    scale(1.08);
+}
+
+.seat--dead {
+  opacity: 0.45;
+  cursor: default;
+  border-color: var(--text-dim);
+}
+
+.seat--dead .seat__name {
+  text-decoration: line-through;
+  color: var(--text-dim);
+}
+
+.seat--dead:hover {
+  opacity: 0.45;
+}
+
+.seat--selected {
+  border-color: var(--accent-gold);
+  box-shadow:
+    0 0 16px rgba(212, 160, 23, 0.4),
+    0 0 32px rgba(212, 160, 23, 0.15);
+}
+
+.seat--selected .seat__name {
+  color: var(--accent-gold);
+  font-weight: 600;
+}
+
+.seat--demon {
+  border-color: var(--accent-red);
+  box-shadow:
+    0 0 20px rgba(196, 30, 58, 0.5),
+    0 0 40px rgba(196, 30, 58, 0.2);
+  animation: demon-pulse 2s ease-in-out infinite;
+}
+
+@keyframes demon-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(196, 30, 58, 0.5),
+      0 0 40px rgba(196, 30, 58, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 28px rgba(196, 30, 58, 0.7),
+      0 0 56px rgba(196, 30, 58, 0.3);
+  }
+}
+
+/* --- Death Marker --- */
+
+.death-marker {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--accent-red);
+  opacity: 0.7;
+  pointer-events: none;
+  text-shadow: 0 0 8px rgba(196, 30, 58, 0.6);
+}
+
+/* --- Claim Highlight States --- */
+
+.seat--claim-source {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 14px rgba(74, 127, 255, 0.5);
+  z-index: 2;
+}
+
+.seat--claim-target {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 14px rgba(212, 160, 23, 0.4);
+  z-index: 2;
+}
